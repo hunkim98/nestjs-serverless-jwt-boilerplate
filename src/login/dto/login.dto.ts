@@ -9,3 +9,9 @@ export class LoginDto {
   @MaxLength(60)
   readonly password: string;
 }
+
+export class GoogleLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+}

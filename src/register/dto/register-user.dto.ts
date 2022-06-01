@@ -1,4 +1,10 @@
-import { MaxLength, IsNotEmpty, IsEmail, IsString } from 'class-validator';
+import {
+  MaxLength,
+  IsNotEmpty,
+  IsEmail,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 
 export class RegisterUserDto {
   readonly id: number;
@@ -18,4 +24,10 @@ export class RegisterUserDto {
   @IsString()
   @MaxLength(60)
   password: string;
+
+  @IsOptional()
+  readonly socialLoginType: 'google';
+
+  @IsOptional()
+  readonly socialLoginEmail: string;
 }

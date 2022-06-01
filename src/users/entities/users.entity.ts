@@ -18,4 +18,10 @@ export class Users {
 
   @Column({ length: 60 })
   password: string;
+
+  @Column({ nullable: true })
+  socialLoginType: 'google';
+
+  @Column({ nullable: true })
+  socialLoginEmail: string;
 }

@@ -8,6 +8,8 @@ import { UsersService } from '../users/users.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { GoogleService } from './google.service';
 
 @Module({
   imports: [
@@ -25,7 +27,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [LoginService, UsersService, JwtStrategy],
+  providers: [
+    LoginService,
+    UsersService,
+    JwtStrategy,
+    GoogleService,
+    GoogleStrategy,
+  ],
   controllers: [LoginController],
 })
 export class LoginModule {}

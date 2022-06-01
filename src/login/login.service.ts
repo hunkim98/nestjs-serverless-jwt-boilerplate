@@ -17,6 +17,15 @@ export class LoginService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
+  public async googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google';
+    }
+    return {
+      message: 'User information from google',
+      user: req.user,
+    };
+  }
 
   private async validate(loginDto: LoginDto): Promise<IUsers> {
     return await this.usersService.findByEmail(loginDto.email);

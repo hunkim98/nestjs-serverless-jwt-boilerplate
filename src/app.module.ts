@@ -32,6 +32,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ForgotPasswordModule,
     ChangePasswordModule,
     MailerModule,
+    // GoogleOauthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
