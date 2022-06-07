@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Users {
@@ -20,8 +21,12 @@ export class Users {
   password: string;
 
   @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
+
+  @Column({ nullable: true })
   socialLoginType: 'google';
 
   @Column({ nullable: true })
-  socialLoginEmail: string;
+  socialLoginId: string;
 }

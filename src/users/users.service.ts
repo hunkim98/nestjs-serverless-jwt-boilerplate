@@ -40,7 +40,7 @@ export class UsersService {
     return user;
   }
 
-  public async findById(userId: string): Promise<Users> {
+  public async findById(userId: number): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
@@ -52,6 +52,30 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, id: number) {
+    const currentHashedRefreshToken = bcrypt.hashSync(refreshToken, 10);
+    await this.userRepository.update(id, { currentHashedRefreshToken });
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+    const user = await this.findById(id);
+
+    const isRefreshTokenMatching = bcrypt.compareSync(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(id: number) {
+    return this.userRepository.update(id, {
+      currentHashedRefreshToken: null,
+    });
   }
 
   public async create(userDto: UserDto): Promise<IUsers> {
@@ -104,4 +128,7 @@ export class UsersService {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
+}
+function hash(refreshToken: string, arg1: number) {
+  throw new Error('Function not implemented.');
 }

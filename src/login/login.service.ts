@@ -10,12 +10,15 @@ import { IUsers } from '../users/interfaces/users.interface';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt.payload';
 import { LoginDto } from './dto/login.dto';
+import { Users } from 'src/users/entities/users.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
   public async googleLogin(req) {
     if (!req.user) {
@@ -82,8 +85,9 @@ export class LoginService {
     return this.createJwtPayload(user);
   }
 
-  protected createJwtPayload(user) {
+  protected createJwtPayload(user: Users) {
     const data: JwtPayload = {
+      uid: user.id,
       email: user.email,
     };
 
@@ -94,4 +98,64 @@ export class LoginService {
       token: jwt,
     };
   }
+
+  getCookieWithJwtAccessToken(user: Users) {
+    const payload = { uid: user.id, email: user.email };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get<string>(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    return {
+      accessToken: token,
+      domain: this.configService.get<string>('DOMAIN'),
+      path: '/',
+      httpOnly: true,
+      maxAge:
+        Number(
+          this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+        ) * 1000,
+    };
+  }
+
+  getCookieWithJwtRefreshToken(user: Users) {
+    const payload = { uid: user.id, email: user.email };
+    const token = this.jwtService.sign(payload, {
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    return {
+      refreshToken: token,
+      domain: this.configService.get<string>('DOMAIN'),
+      path: '/',
+      httpOnly: true,
+      maxAge:
+        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+        1000,
+    };
+  }
+
+  getCookiesForLogOut() {
+    return {
+      accessOption: {
+        domain: this.configService.get<string>('DOMAIN'),
+        path: '/',
+        httpOnly: true,
+        maxAge: 0,
+      },
+      refreshOption: {
+        domain: this.configService.get<string>('DOMAIN'),
+        path: '/',
+        httpOnly: true,
+        maxAge: 0,
+      },
+    };
+  }
+}
+function hash(refreshToken: string, arg1: number) {
+  throw new Error('Function not implemented.');
 }

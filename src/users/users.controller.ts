@@ -26,7 +26,7 @@ export class UsersController {
     @Res() res,
     @Param('userId') userId: string,
   ): Promise<IUsers> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findById(Number(userId));
 
     if (!user) {
       throw new NotFoundException('User does not exist!');
