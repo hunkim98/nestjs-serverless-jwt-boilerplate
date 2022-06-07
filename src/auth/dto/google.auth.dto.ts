@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Users } from 'src/users/entities/users.entity';
+import { Users } from '../../entities/users.entity';
 
 export class GoogleAuthBodyDto {
   @IsString()

@@ -1,32 +1,41 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { IsInt, IsString } from 'class-validator';
 
-@Entity()
+@Entity({ name: 'tb_user' })
 export class Users {
+  @IsInt()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsString()
   @Column()
-  name: string;
+  nickname: string;
 
+  @IsString()
   @Column()
   username: string;
 
+  @IsString()
   @Column({
     unique: true,
   })
   email: string;
 
-  @Column({ length: 60 })
+  @IsString()
+  @Column()
   password: string;
 
+  @IsString()
   @Column({ nullable: true })
   @Exclude()
   currentHashedRefreshToken?: string;
 
+  @IsString()
   @Column({ nullable: true })
   socialLoginType: 'google';
 
+  @IsString()
   @Column({ nullable: true })
   socialLoginId: string;
 }

@@ -5,11 +5,11 @@ import {
   IsString,
   IsOptional,
 } from 'class-validator';
-
+/** Remember to update this dto to match it with User entity */
 export class UserDto {
   @IsString()
   @MaxLength(30)
-  readonly name: string;
+  readonly nickname: string;
 
   @IsString()
   @MaxLength(40)
@@ -27,5 +27,5 @@ export class UserDto {
   readonly socialLoginType: 'google';
 
   @IsOptional()
-  readonly socialLoginEmail: string;
+  readonly socialLoginId: string;
 }

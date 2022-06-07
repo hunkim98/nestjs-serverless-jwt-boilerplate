@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../users/entities/users.entity';
+import { Users } from '../entities/users.entity';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { MailerService } from '../mailer/mailer.service';
 import * as bcrypt from 'bcrypt';
@@ -18,10 +18,10 @@ export class ForgotPasswordService {
     forgotPasswordDto: ForgotPasswordDto,
   ): Promise<any> {
     const userUpdate = await this.userRepository.findOne({
-      email: forgotPasswordDto.email,
+      where: { email: forgotPasswordDto.email },
     });
     const passwordRand = Math.random().toString(36).slice(-8);
-    userUpdate.password = bcrypt.hashSync(passwordRand, 8);
+    userUpdate.password = bcrypt.hashSync(passwordRand, 10);
 
     this.sendMailForgotPassword(userUpdate.email, passwordRand);
 
@@ -30,7 +30,7 @@ export class ForgotPasswordService {
 
   private passwordRand(password): string {
     const passwordRand = Math.random().toString(36).slice(-8);
-    password = bcrypt.hashSync(passwordRand, 8);
+    password = bcrypt.hashSync(passwordRand, 10);
     return password;
   }
 

@@ -2,22 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { IUsers } from './../users/interfaces/users.interface';
 import { MailerService } from '../mailer/mailer.service';
+import { AuthService } from './auth.service';
+import { Tokens } from './dto/token.dto';
+import { IUsers } from 'src/users/interfaces/users.interface';
+import { Users } from '../entities/users.entity';
 
 @Injectable()
 export class RegisterService {
   constructor(
     private readonly usersService: UsersService,
     private readonly mailerService: MailerService,
+    private readonly authService: AuthService,
   ) {}
 
-  public async register(registerUserDto: RegisterUserDto): Promise<IUsers> {
-    registerUserDto.password = bcrypt.hashSync(registerUserDto.password, 8);
+  public async register(registerUserDto: RegisterUserDto): Promise<Users> {
+    registerUserDto.password = bcrypt.hashSync(registerUserDto.password, 10);
 
-    this.sendMailRegisterUser(registerUserDto);
-
-    return this.usersService.create(registerUserDto);
+    const newUser = await this.usersService.create(registerUserDto);
+    // this.sendMailRegisterUser(registerUserDto);
+    return newUser;
   }
 
   private sendMailRegisterUser(user): void {

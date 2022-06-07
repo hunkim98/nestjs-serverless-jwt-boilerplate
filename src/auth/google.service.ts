@@ -22,7 +22,7 @@ export class GoogleService {
     this.oauthClient.setCredentials(userCredentials.tokens);
     const accessToken = (await this.oauthClient.getAccessToken()).token;
     const userInfo = await this.oauthClient.getTokenInfo(accessToken);
-    const user = await this.usersService.findBySocialLoginEmail(userInfo.email);
+    const user = await this.usersService.findBySocialLoginId(userInfo.user_id);
     return { user: user, email: userInfo.email };
   }
 }

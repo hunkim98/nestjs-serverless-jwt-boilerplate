@@ -16,7 +16,7 @@ import { IUsers } from './interfaces/users.interface';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('users')
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
