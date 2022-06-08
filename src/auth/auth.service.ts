@@ -50,7 +50,12 @@ export class AuthService {
       // domain: this.configService.get('DOMAIN'),
       path: '/',
       httpOnly: true,
-      maxAge: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      //secure allows cookie sending only to same domain of the backend
+      secure: true,
+      //cookie's max age is in miliseconds(must multiply by 1000)
+      maxAge:
+        Number(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')) *
+        1000,
     };
   }
 
@@ -68,8 +73,11 @@ export class AuthService {
       refreshToken,
       // domain: this.configService.get('DOMAIN'),
       path: '/',
+      secure: true,
       httpOnly: true,
-      maxAge: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+      maxAge:
+        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+        1000,
     };
   }
 
