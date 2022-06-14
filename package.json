@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-api-boilerplate-jwt",
+  "name": "nestjs-auth-jwt-boilerplate",
   "version": "1.0.0",
   "description": "An API Boilerplate to create a ready-to-use REST API in seconds with NestJS 8.x and Passport Auth JWT System",
   "author": "Tony133",
