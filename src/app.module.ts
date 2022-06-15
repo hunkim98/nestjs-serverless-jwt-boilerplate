@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { Users } from './entities/users.entity';
 import { join } from 'path';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { join } from 'path';
     ForgotPasswordModule,
     ChangePasswordModule,
     MailerModule,
+    PrismaModule,
     // GoogleOauthModule,
   ],
   controllers: [AppController],

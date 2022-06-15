@@ -12,10 +12,13 @@ import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private prisma: PrismaService,
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
   ) {}
@@ -30,12 +33,13 @@ export class UsersService {
     }
   }
 
-  public async findByEmail(email: string): Promise<Users> {
-    const user = await this.userRepository.findOne({
-      where: {
-        email: email,
-      },
-    });
+  public async findByEmail(email: string): Promise<User> {
+    const user = this.prisma.user.findUnique({ where: { email: email } });
+    // const user = await this.userRepository.findOne({
+    //   where: {
+    //     email: email,
+    //   },
+    // });
 
     if (!user) {
       throw new NotFoundException(`User ${email} not found`);
@@ -44,19 +48,23 @@ export class UsersService {
     return user;
   }
 
-  public async findBySocialLoginId(socialLoginId: string): Promise<Users> {
-    const user = await this.userRepository.findOne({
-      where: { socialLoginId },
+  public async findBySocialLoginId(socialLoginId: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({
+      where: { socialLoginId: socialLoginId },
     });
+    // const user = await this.userRepository.findOne({
+    //   where: { socialLoginId },
+    // });
     return user;
   }
 
-  public async findById(id: number): Promise<Users> {
-    const user = await this.userRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
+  public async findById(id: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id: id } });
+    // const user = await this.userRepository.findOne({
+    //   where: {
+    //     id: id,
+    //   },
+    // });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -67,13 +75,17 @@ export class UsersService {
    * the hashed refresh token is saved into user repository  */
   async setCurrentRefreshToken(id: number, refreshToken: string) {
     const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    await this.userRepository.update({ id }, { currentHashedRefreshToken });
+    await this.prisma.user.update({
+      where: { id: id },
+      data: { currentHashedRefreshToken: currentHashedRefreshToken },
+    });
+    // await this.userRepository.update({ id }, { currentHashedRefreshToken });
   }
 
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
     id: number,
-  ): Promise<Users> {
+  ): Promise<User> {
     const user = await this.findById(id);
     const isRefreshTokenMatching = await bcrypt.compare(
       refreshToken,
@@ -86,17 +98,22 @@ export class UsersService {
   }
 
   async removeRefreshToken(id: number) {
-    return this.userRepository.update(
-      { id },
-      {
-        currentHashedRefreshToken: null,
-      },
-    );
+    return this.prisma.user.update({
+      where: { id: id },
+      data: { currentHashedRefreshToken: null },
+    });
+    // return this.userRepository.update(
+    //   { id },
+    //   {
+    //     currentHashedRefreshToken: null,
+    //   },
+    // );
   }
 
-  public async create(registerUserDto: RegisterUserDto): Promise<Users> {
+  public async create(registerUserDto: RegisterUserDto): Promise<User> {
     try {
-      return await this.userRepository.save(registerUserDto);
+      return await this.prisma.user.create({ data: registerUserDto });
+      // return await this.userRepository.save(registerUserDto);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }

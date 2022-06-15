@@ -24,8 +24,12 @@ export class UserDto {
   password: string;
 
   @IsOptional()
-  readonly socialLoginType: 'google';
+  readonly socialLoginType: SocialLoginType;
 
   @IsOptional()
   readonly socialLoginId: string;
+}
+
+enum SocialLoginType {
+  GOOGLE = 'GOOGLE',
 }
