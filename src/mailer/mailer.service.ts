@@ -9,16 +9,19 @@ export class MailerService {
   private nodemailerTransport: Mail;
 
   constructor(private readonly configService: ConfigService) {
-    this.nodemailerTransport = createTransport({
-      host: this.configService.get<string>('EMAIL_HOST'),
-      port: this.configService.get<number>('EMAIL_PORT'),
-      auth: {
-        user: this.configService.get<string>('EMAIL_AUTH_USER'),
-        pass: this.configService.get<string>('EMAIL_AUTH_PASSWORD'),
+    this.nodemailerTransport = createTransport(
+      {
+        host: this.configService.get<string>('EMAIL_HOST'),
+        port: this.configService.get<number>('EMAIL_PORT'),
+        auth: {
+          user: this.configService.get<string>('EMAIL_AUTH_USER'),
+          pass: this.configService.get<string>('EMAIL_AUTH_PASSWORD'),
+        },
+        debug: this.configService.get<boolean>('EMAIL_DEBUG'),
+        logger: true,
       },
-      debug: this.configService.get<boolean>('EMAIL_DEBUG'),
-      logger: true,
-    });
+      { from: this.configService.get<string>('EMAIL_FROM') },
+    );
 
     const options = {
       viewEngine: {

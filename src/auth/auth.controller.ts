@@ -37,6 +37,12 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
+  @Get('email')
+  public async emailTest() {
+    this.registerService.sendMailTest();
+    return 'success';
+  }
+
   @Post('login')
   public async login(
     @Body() loginDto: LoginDto,

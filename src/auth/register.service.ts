@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
 import { IUsers } from 'src/users/interfaces/users.interface';
 import { Users } from '../entities/users.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RegisterService {
@@ -14,6 +15,7 @@ export class RegisterService {
     private readonly usersService: UsersService,
     private readonly mailerService: MailerService,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   public async register(registerUserDto: RegisterUserDto): Promise<Users> {
@@ -24,11 +26,36 @@ export class RegisterService {
     return newUser;
   }
 
+  sendMailTest(): void {
+    this.mailerService
+      .sendMail({
+        to: 'hunkim98@gmail.com',
+        // we have set from in the service constructor
+        // from: this.configService.get('EMAIL_AUTH_USER'),
+        subject: 'Registration successful ✔',
+        text: 'Registration successful!',
+        template: 'index',
+        context: {
+          title: 'Registration successfully',
+          description:
+            "You did it! You registered!, You're successfully registered.✔",
+          nameUser: 'hunkim98',
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        console.log('User Registration: Send Mail successfully!');
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log('User Registration: Send Mail Failed!');
+      });
+  }
+
   private sendMailRegisterUser(user): void {
     this.mailerService
       .sendMail({
         to: user.email,
-        from: 'from@example.com',
         subject: 'Registration successful ✔',
         text: 'Registration successful!',
         template: 'index',
