@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE `users`;
-
 -- CreateTable
 CREATE TABLE `tb_user` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -18,7 +9,21 @@ CREATE TABLE `tb_user` (
     `currentHashedRefreshToken` VARCHAR(191) NULL,
     `socialLoginType` ENUM('GOOGLE') NULL,
     `socialLoginId` VARCHAR(191) NULL,
+    `verified` BOOLEAN NOT NULL DEFAULT false,
+    `verificationId` INTEGER NOT NULL,
 
     UNIQUE INDEX `tb_user_email_key`(`email`),
+    UNIQUE INDEX `tb_user_verificationId_key`(`verificationId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Verification` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `expireAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `tb_user` ADD CONSTRAINT `tb_user_verificationId_fkey` FOREIGN KEY (`verificationId`) REFERENCES `Verification`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

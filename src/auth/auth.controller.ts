@@ -84,6 +84,8 @@ export class AuthController {
     return accessToken;
   }
 
+  // @Post()
+
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   public async refresh(

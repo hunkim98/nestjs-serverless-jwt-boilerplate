@@ -14,6 +14,7 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
@@ -33,8 +34,14 @@ export class UsersService {
     }
   }
 
+  public async getUserVerificationInfo(verificationId: number) {
+    return await this.prisma.verification.findFirst({
+      where: { id: verificationId },
+    });
+  }
+
   public async findByEmail(email: string): Promise<User> {
-    const user = this.prisma.user.findUnique({ where: { email: email } });
+    const user = await this.prisma.user.findUnique({ where: { email: email } });
     // const user = await this.userRepository.findOne({
     //   where: {
     //     email: email,
@@ -112,8 +119,17 @@ export class UsersService {
 
   public async create(registerUserDto: RegisterUserDto): Promise<User> {
     try {
-      return await this.prisma.user.create({ data: registerUserDto });
-      // return await this.userRepository.save(registerUserDto);
+      const now = new Date();
+      const afterFiveMinutesFromNow = new Date();
+      afterFiveMinutesFromNow.setMinutes(now.getMinutes() + 5);
+      //after 5 minutes the url is not confirmed
+      const verification = await this.prisma.verification.create({
+        data: { expireAt: afterFiveMinutesFromNow, code: uuidv4() },
+      });
+      return await this.prisma.user.create({
+        //connect for one to one relationship
+        data: { ...registerUserDto, verification: { connect: verification } },
+      });
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }

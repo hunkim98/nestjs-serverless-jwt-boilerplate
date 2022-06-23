@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { Users } from '../entities/users.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class LoginService {
@@ -30,7 +31,7 @@ export class LoginService {
     };
   }
 
-  public async login(loginDto: LoginDto): Promise<Users> {
+  public async login(loginDto: LoginDto): Promise<User> {
     const user = await this.usersService.validateUser(
       loginDto.email,
       loginDto.password,
@@ -51,7 +52,7 @@ export class LoginService {
     return this.createJwtPayload(user);
   }
 
-  protected createJwtPayload(user: Users) {
+  protected createJwtPayload(user: User) {
     const data: JwtPayload = {
       uid: user.id,
       email: user.email,

@@ -5,9 +5,8 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { MailerService } from '../mailer/mailer.service';
 import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
-import { IUsers } from 'src/users/interfaces/users.interface';
-import { Users } from '../entities/users.entity';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class RegisterService {
@@ -18,11 +17,15 @@ export class RegisterService {
     private readonly configService: ConfigService,
   ) {}
 
-  public async register(registerUserDto: RegisterUserDto): Promise<Users> {
+  public async register(registerUserDto: RegisterUserDto): Promise<User> {
     registerUserDto.password = bcrypt.hashSync(registerUserDto.password, 10);
 
     const newUser = await this.usersService.create(registerUserDto);
-    // this.sendMailRegisterUser(registerUserDto);
+    const newUserVerification = await this.usersService.getUserVerificationInfo(
+      newUser.verificationId,
+    );
+
+    this.sendMailRegisterUser(newUser, newUserVerification.code);
     return newUser;
   }
 
@@ -52,7 +55,7 @@ export class RegisterService {
       });
   }
 
-  private sendMailRegisterUser(user): void {
+  private sendMailRegisterUser(user: User, verificationCode: string): void {
     this.mailerService
       .sendMail({
         to: user.email,
@@ -63,7 +66,7 @@ export class RegisterService {
           title: 'Registration successfully',
           description:
             "You did it! You registered!, You're successfully registered.✔",
-          nameUser: user.name,
+          nameUser: user.nickname,
         },
       })
       .then((response) => {

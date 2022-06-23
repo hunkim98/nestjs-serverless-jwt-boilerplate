@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 import { CookieOptions } from 'express';
 import { Users } from '../entities/users.entity';
 import { Tokens } from './dto/token.dto';
@@ -60,7 +61,7 @@ export class AuthService {
   }
 
   public getCookieWithJwtRefreshToken(
-    user: Users,
+    user: User,
   ): CookieOptions & { refreshToken: string } {
     const payload = { uid: user.id, email: user.email };
     const refreshToken = this.jwtService.sign(payload, {

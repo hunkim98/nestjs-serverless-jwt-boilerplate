@@ -21,8 +21,21 @@ model User {
   currentHashedRefreshToken String?
   socialLoginType           SocialLoginType?
   socialLoginId             String?
+  verified                  Boolean          @default(false)
 
+  verification Verification @relation(fields: [verificationId], references: [id])
+
+  verificationId Int @unique
   @@map("tb_user")
+}
+
+model Verification {
+  id       Int      @id @default(autoincrement())
+  expireAt DateTime
+  code     String
+  user     User?
+
+  @@map("tb_verification")
 }
 
 enum SocialLoginType {
