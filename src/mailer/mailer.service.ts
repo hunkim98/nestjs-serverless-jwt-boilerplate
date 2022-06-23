@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createTransport } from 'nodemailer';
+import { createTransport, SendMailOptions } from 'nodemailer';
 import * as Mail from 'nodemailer/lib/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as hbs from 'nodemailer-express-handlebars';

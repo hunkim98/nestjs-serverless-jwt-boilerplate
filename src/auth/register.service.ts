@@ -43,6 +43,7 @@ export class RegisterService {
           description:
             "You did it! You registered!, You're successfully registered.✔",
           nameUser: 'hunkim98',
+          url: `${this.configService.get<string>('CLIENT_URL')}/verify/${2222}`,
         },
       })
       .then((response) => {
@@ -67,6 +68,9 @@ export class RegisterService {
           description:
             "You did it! You registered!, You're successfully registered.✔",
           nameUser: user.nickname,
+          url: `${this.configService.get<string>(
+            'CLIENT_URL',
+          )}/verify/${verificationCode}`,
         },
       })
       .then((response) => {
