@@ -18,7 +18,7 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([Users]),
+    // TypeOrmModule.forFeature([Users]),
     PassportModule,
     JwtModule.register({}),
     MailerModule,

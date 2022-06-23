@@ -1,31 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entities/users.entity';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { MailerService } from '../mailer/mailer.service';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ForgotPasswordService {
   constructor(
-    @InjectRepository(Users)
-    private userRepository: Repository<Users>,
+    // @InjectRepository(Users)
+    // private userRepository: Repository<Users>,
+    private prisma: PrismaService,
     private readonly mailerService: MailerService,
   ) {}
 
   public async forgotPassword(
     forgotPasswordDto: ForgotPasswordDto,
   ): Promise<any> {
-    const userUpdate = await this.userRepository.findOne({
-      where: { email: forgotPasswordDto.email },
-    });
-    const passwordRand = Math.random().toString(36).slice(-8);
-    userUpdate.password = bcrypt.hashSync(passwordRand, 10);
+    try {
+      const passwordRand = Math.random().toString(36).slice(-8);
+      const userUpdate = await this.prisma.user.update({
+        where: { email: forgotPasswordDto.email },
+        data: { password: bcrypt.hashSync(passwordRand, 10) },
+      });
+      this.sendMailForgotPassword(userUpdate.email, passwordRand);
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+    // const userUpdate = await this.prisma.user.findFirst({
+    //   where: { email: forgotPasswordDto.email },
+    // });
+    // const passwordRand = Math.random().toString(36).slice(-8);
+    // userUpdate.password = bcrypt.hashSync(passwordRand, 10);
 
-    this.sendMailForgotPassword(userUpdate.email, passwordRand);
+    // this.sendMailForgotPassword(userUpdate.email, passwordRand);
 
-    return await this.userRepository.save(userUpdate);
+    // return await this.userRepository.save(userUpdate);
   }
 
   private passwordRand(password): string {

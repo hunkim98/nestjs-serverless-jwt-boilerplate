@@ -4,8 +4,6 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entities/users.entity';
 import { IUsers } from './interfaces/users.interface';
 import { UserDto } from './dto/user.dto';
@@ -18,11 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private prisma: PrismaService,
-    @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   public async validateUser(email: string, password: string) {
     const user = await this.findByEmail(email);
@@ -137,14 +131,14 @@ export class UsersService {
 
   public async createWithGoogle() {}
 
-  public async updateByEmail(email: string): Promise<Users> {
+  public async updateByEmail(email: string): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({
+      return await this.prisma.user.update({
         where: { email: email },
+        data: {
+          password: bcrypt.hashSync(Math.random().toString(36).slice(-8), 8),
+        },
       });
-      user.password = bcrypt.hashSync(Math.random().toString(36).slice(-8), 8);
-
-      return await this.userRepository.save(user);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
@@ -153,14 +147,20 @@ export class UsersService {
   public async updateByPassword(
     email: string,
     password: string,
-  ): Promise<Users> {
+  ): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { email: email },
-      });
-      user.password = bcrypt.hashSync(password, 10);
+      // const user = await this.userRepository.findOne({
+      //   where: { email: email },
+      // });
+      // user.password = bcrypt.hashSync(password, 10);
 
-      return await this.userRepository.save(user);
+      return await this.prisma.user.update({
+        where: { email: email },
+        data: {
+          password: bcrypt.hashSync(password, 10),
+        },
+      });
+      // return await this.userRepository.save(user);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
@@ -169,16 +169,25 @@ export class UsersService {
   public async updateProfileUser(
     id: string,
     userProfileDto: UserProfileDto,
-  ): Promise<Users> {
+  ): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { id: Number(id) },
-      });
-      user.nickname = userProfileDto.nickname;
-      user.email = userProfileDto.email;
-      user.username = userProfileDto.username;
+      // const user = await this.userRepository.findOne({
+      //   where: { id: Number(id) },
+      // });
+      // user.nickname = userProfileDto.nickname;
+      // user.email = userProfileDto.email;
+      // user.username = userProfileDto.username;
 
-      return await this.userRepository.save(user);
+      return await this.prisma.user.update({
+        where: { id: Number(id) },
+        data: {
+          nickname: userProfileDto.nickname,
+          email: userProfileDto.email,
+          username: userProfileDto.username,
+        },
+      });
+
+      // return await this.userRepository.save(user);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }

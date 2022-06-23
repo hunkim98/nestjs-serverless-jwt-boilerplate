@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import { MailerModule } from '../mailer/mailer.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), MailerModule],
+  imports: [MailerModule],
   providers: [ForgotPasswordService, UsersService],
   controllers: [ForgotPasswordController],
 })
