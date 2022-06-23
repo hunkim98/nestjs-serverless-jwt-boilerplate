@@ -84,7 +84,8 @@ export class AuthController {
     return accessToken;
   }
 
-  // @Post()
+  @Post('register/verify')
+  public async verifyRegister(@Body() body: any) {}
 
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')

@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RegisterService {
@@ -15,6 +16,7 @@ export class RegisterService {
     private readonly mailerService: MailerService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {}
 
   public async register(registerUserDto: RegisterUserDto): Promise<User> {
@@ -29,21 +31,36 @@ export class RegisterService {
     return newUser;
   }
 
+  public async verifyRegisterByEmail(code: string) {
+    const verification = await this.prisma.verification.findFirst({
+      where: { code: code },
+      include: { user: true },
+    });
+    if (verification) {
+      await this.prisma.user.update({
+        where: { id: verification.user.id },
+        data: { verified: true },
+      });
+      return true;
+    }
+    return false;
+  }
+
   sendMailTest(): void {
     this.mailerService
       .sendMail({
         to: 'hunkim98@gmail.com',
         // we have set from in the service constructor
         // from: this.configService.get('EMAIL_AUTH_USER'),
-        subject: 'Registration successful ✔',
-        text: 'Registration successful!',
+        subject: '이메일 인증',
+        text: '이메일 인증',
         template: 'index',
         context: {
-          title: 'Registration successfully',
-          description:
-            "You did it! You registered!, You're successfully registered.✔",
+          title: '이메일 인증',
+          description: '이메일 인증을 하려면 아래 버튼을 클릭해주세요',
           nameUser: 'hunkim98',
           url: `${this.configService.get<string>('CLIENT_URL')}/verify/${2222}`,
+          urlButtonText: '등록 확인',
         },
       })
       .then((response) => {
@@ -60,17 +77,17 @@ export class RegisterService {
     this.mailerService
       .sendMail({
         to: user.email,
-        subject: 'Registration successful ✔',
-        text: 'Registration successful!',
+        subject: '이메일 인증',
+        text: '이메일 인증',
         template: 'index',
         context: {
-          title: 'Registration successfully',
-          description:
-            "You did it! You registered!, You're successfully registered.✔",
+          title: '이메일 인증',
+          description: '이메일 인증을 하려면 아래 버튼을 클릭해주세요',
           nameUser: user.nickname,
           url: `${this.configService.get<string>(
             'CLIENT_URL',
           )}/verify/${verificationCode}`,
+          urlButtonText: '등록 확인',
         },
       })
       .then((response) => {
