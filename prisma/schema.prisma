@@ -16,13 +16,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   email                     String           @unique
-  nickname                  String
+  nickname                  String           @unique
+  name                      String
   password                  String
+  isTermsAgreed             Boolean
+  isSnsAgreed               Boolean
   currentHashedRefreshToken String?
   socialLoginType           SocialLoginType?
   socialLoginId             String?
   verified                  Boolean          @default(false)
-  username                  String
 
   verification Verification @relation(fields: [verificationId], references: [id])
 

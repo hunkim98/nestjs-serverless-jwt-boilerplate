@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 
 import { LoginService } from './login.service';
-import { GoogleLoginDto, LoginDto } from './dto/login.dto';
+import { GoogleLoginDto, LoginDto } from './dto/body/login.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
 import { GoogleAuthBodyDto, GoogleAuthResDto } from './dto/google.auth.dto';
 import { UsersService } from 'src/users/users.service';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterDto } from './dto/body/register.dto';
 import { RegisterService } from './register.service';
 import { AuthService } from './auth.service';
 import { Request, response, Response } from 'express';
@@ -25,6 +25,7 @@ import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import RequestWithUser from './interfaces/request-with-user.interface';
 import { request } from 'http';
 import { JwtGuard } from './guards/jwt.guard';
+import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -64,10 +65,10 @@ export class AuthController {
 
   @Post('register')
   public async register(
-    @Body() registerUserDto: RegisterUserDto,
+    @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = await this.registerService.register(registerUserDto);
+    const user = await this.registerService.register(registerDto);
     const accessToken = (
       await this.authService.getTokens({
         uid: user.id,
@@ -85,7 +86,10 @@ export class AuthController {
   }
 
   @Post('register/verify')
-  public async verifyRegister(@Body() body: any) {}
+  public async verifyRegister(@Body() body: VerifyRegisterDto) {
+    const success = await this.registerService.verifyRegisterCode(body.code);
+    return success;
+  }
 
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')

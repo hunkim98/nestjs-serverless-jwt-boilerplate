@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterDto } from './dto/body/register.dto';
 import { MailerService } from '../mailer/mailer.service';
 import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
@@ -19,7 +19,7 @@ export class RegisterService {
     private readonly prisma: PrismaService,
   ) {}
 
-  public async register(registerUserDto: RegisterUserDto): Promise<User> {
+  public async register(registerUserDto: RegisterDto): Promise<User> {
     registerUserDto.password = bcrypt.hashSync(registerUserDto.password, 10);
 
     const newUser = await this.usersService.create(registerUserDto);
@@ -31,7 +31,7 @@ export class RegisterService {
     return newUser;
   }
 
-  public async verifyRegisterByEmail(code: string) {
+  public async verifyRegisterCode(code: string) {
     const verification = await this.prisma.verification.findFirst({
       where: { code: code },
       include: { user: true },

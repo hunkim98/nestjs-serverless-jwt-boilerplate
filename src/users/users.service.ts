@@ -9,7 +9,7 @@ import { IUsers } from './interfaces/users.interface';
 import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserProfileDto } from './dto/user-profile.dto';
-import { RegisterUserDto } from '../auth/dto/register-user.dto';
+import { RegisterDto } from '../auth/dto/body/register.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
@@ -111,7 +111,7 @@ export class UsersService {
     // );
   }
 
-  public async create(registerUserDto: RegisterUserDto): Promise<User> {
+  public async create(registerUserDto: RegisterDto): Promise<User> {
     try {
       const now = new Date();
       const afterFiveMinutesFromNow = new Date();
