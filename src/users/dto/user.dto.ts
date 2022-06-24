@@ -25,10 +25,10 @@ export class UserDto {
   password: string;
 
   @IsBoolean()
-  isTermsAgreed: string;
+  isTermsAgreed: boolean;
 
   @IsBoolean()
-  isSnsAgreed: string;
+  isSnsAgreed: boolean;
 
   @IsOptional()
   readonly socialLoginType: SocialLoginType;
