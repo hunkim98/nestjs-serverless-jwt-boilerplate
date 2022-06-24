@@ -25,6 +25,7 @@ model User {
   socialLoginType           SocialLoginType?
   socialLoginId             String?
   verified                  Boolean          @default(false)
+  membershipLevel           Int              @default(0)
 
   verification Verification @relation(fields: [verificationId], references: [id])
 

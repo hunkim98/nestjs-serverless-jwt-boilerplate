@@ -8,6 +8,7 @@ import { Tokens } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RegisterService {
@@ -31,12 +32,28 @@ export class RegisterService {
     return newUser;
   }
 
+  public async issueRegisterCode(uid: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: uid },
+      include: { verification: true },
+    });
+    const now = new Date();
+    const afterFiveMinutesFromNow = new Date();
+    afterFiveMinutesFromNow.setMinutes(now.getMinutes() + 5);
+    const newUserVerification = await this.prisma.verification.update({
+      where: { id: user.verification.id },
+      data: { expireAt: afterFiveMinutesFromNow, code: uuidv4() },
+    });
+    this.sendMailRegisterUser(user, newUserVerification.code);
+  }
+
   public async verifyRegisterCode(code: string) {
     const verification = await this.prisma.verification.findFirst({
       where: { code: code },
       include: { user: true },
     });
-    if (verification) {
+    const now = new Date();
+    if (verification && now < verification.expireAt) {
       await this.prisma.user.update({
         where: { id: verification.user.id },
         data: { verified: true },

@@ -181,9 +181,7 @@ export class UsersService {
       return await this.prisma.user.update({
         where: { id: Number(id) },
         data: {
-          nickname: userProfileDto.nickname,
-          email: userProfileDto.email,
-          username: userProfileDto.username,
+          isSnsAgreed: userProfileDto.isSnsAgreed,
         },
       });
 

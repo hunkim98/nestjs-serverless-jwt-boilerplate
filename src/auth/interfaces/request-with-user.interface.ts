@@ -1,8 +1,8 @@
+import { User } from '@prisma/client';
 import { Request } from 'express';
-import { Users } from '../../entities/users.entity';
 
 interface RequestWithUser extends Request {
-  user: Users;
+  user: Omit<User, 'password'>;
 }
 
 export default RequestWithUser;

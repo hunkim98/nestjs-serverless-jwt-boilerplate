@@ -1,4 +1,3 @@
-export class LoginResDto {
-  id: number;
-  email: string;
-}
+import { VerifiedUserResDto } from './common';
+
+export class LoginResDto extends VerifiedUserResDto {}

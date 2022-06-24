@@ -7,6 +7,7 @@ import {
   Req,
   Res,
   Redirect,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { LoginService } from './login.service';
@@ -26,6 +27,7 @@ import RequestWithUser from './interfaces/request-with-user.interface';
 import { request } from 'http';
 import { JwtGuard } from './guards/jwt.guard';
 import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
+import { RefreshResDto } from './dto/response/refresh.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -48,7 +50,7 @@ export class AuthController {
   public async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<any> {
+  ): Promise<LoginResDto> {
     const user = await this.loginService.login(loginDto);
     const accessToken = (
       await this.authService.getTokens({
@@ -60,7 +62,11 @@ export class AuthController {
       this.authService.getCookieWithJwtRefreshToken(user);
     await this.usersService.setCurrentRefreshToken(user.id, refreshToken);
     response.cookie('Refresh', refreshToken, refreshCookieOption);
-    return accessToken;
+    return {
+      accessToken: accessToken,
+      isEmailVerified: user.verified,
+      membershipLevel: user.membershipLevel,
+    };
   }
 
   @Post('register')
@@ -75,7 +81,6 @@ export class AuthController {
         email: user.email,
       })
     ).access_token;
-    console.log(accessToken);
     const { refreshToken, ...refreshCookieOption } =
       this.authService.getCookieWithJwtRefreshToken(user);
     await this.usersService.setCurrentRefreshToken(user.id, refreshToken);
@@ -85,9 +90,18 @@ export class AuthController {
     return accessToken;
   }
 
+  @UseGuards(JwtGuard)
+  @Get('register/token')
+  public async getRegisterToken(@Req() request: RequestWithUser) {
+    await this.registerService.issueRegisterCode(request.user.id);
+  }
+
   @Post('register/verify')
   public async verifyRegister(@Body() body: VerifyRegisterDto) {
     const success = await this.registerService.verifyRegisterCode(body.code);
+    if (!success) {
+      throw new BadRequestException('Token has expired');
+    }
     return success;
   }
 
@@ -96,15 +110,18 @@ export class AuthController {
   public async refresh(
     @Req() request: RequestWithUser,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<RefreshResDto> {
     const accessToken = (
       await this.authService.getTokens({
         uid: request.user.id,
         email: request.user.email,
       })
     ).access_token;
-    console.log('controller', accessToken);
-    return accessToken;
+    return {
+      accessToken: accessToken,
+      isEmailVerified: request.user.verified,
+      membershipLevel: request.user.membershipLevel,
+    };
   }
 
   @UseGuards(JwtGuard)
