@@ -122,9 +122,13 @@ export class UsersService {
       });
       return await this.prisma.user.create({
         //connect for one to one relationship
-        data: { ...registerUserDto, verification: { connect: verification } },
+        data: {
+          ...registerUserDto,
+          verification: { connect: { id: verification.id } },
+        },
       });
     } catch (err) {
+      console.log(err);
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }

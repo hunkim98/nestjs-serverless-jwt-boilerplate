@@ -74,6 +74,7 @@ export class AuthController {
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('hihi');
     const user = await this.registerService.register(registerDto);
     const accessToken = (
       await this.authService.getTokens({
@@ -81,8 +82,10 @@ export class AuthController {
         email: user.email,
       })
     ).access_token;
+    console.log('hihi2');
     const { refreshToken, ...refreshCookieOption } =
       this.authService.getCookieWithJwtRefreshToken(user);
+    console.log('hihi3');
     await this.usersService.setCurrentRefreshToken(user.id, refreshToken);
     //safe way is to send refresh token as cookie, and access token as json payload
     response.cookie('Refresh', refreshToken, refreshCookieOption);
