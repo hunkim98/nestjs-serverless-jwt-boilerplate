@@ -14,6 +14,7 @@ import { AuthService } from './auth.service';
 import { MailerModule } from '../mailer/mailer.module';
 import { RegisterService } from './register.service';
 import { UsersModule } from 'src/users/users.module';
+import { IsUserStrategy } from './strategies/is-user.strategy';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from 'src/users/users.module';
     GoogleService,
     AuthService,
     JwtRefreshStrategy,
+    IsUserStrategy,
     RegisterService,
   ],
   controllers: [AuthController],

@@ -6,7 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtPayload } from '../interfaces/jwt.payload';
 
 @Injectable()
-export class JwtLimitStrategy extends PassportStrategy(Strategy, 'jwt-limit') {
+export class IsUserStrategy extends PassportStrategy(Strategy, 'is-user') {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
@@ -17,5 +17,15 @@ export class JwtLimitStrategy extends PassportStrategy(Strategy, 'jwt-limit') {
     });
   }
 
-  async validate(payload: JwtPayload) {}
+  async validate(payload: JwtPayload) {
+    console.log('hihihi');
+    return true;
+    // console.log('hi', payload);
+    // const user = await this.usersService.findById(payload.uid);
+    // if (!user) {
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+  }
 }

@@ -29,6 +29,7 @@ import { JwtGuard } from './guards/jwt.guard';
 import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
 import { RefreshResDto } from './dto/response/refresh.dto';
 import RoleGuard from './guards/role.guard';
+import { IsUserGuard } from './guards/is-user.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,6 +45,14 @@ export class AuthController {
   @Get('email')
   public async emailTest() {
     this.registerService.sendMailTest();
+    return 'success';
+  }
+
+  @UseGuards(IsUserGuard)
+  @Get('check')
+  public async check(@Req() req) {
+    const isUser = req.user && true;
+    console.log(isUser);
     return 'success';
   }
 
