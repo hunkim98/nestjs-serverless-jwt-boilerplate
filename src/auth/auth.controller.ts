@@ -28,6 +28,7 @@ import { request } from 'http';
 import { JwtGuard } from './guards/jwt.guard';
 import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
 import { RefreshResDto } from './dto/response/refresh.dto';
+import RoleGuard from './guards/role.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -99,6 +100,8 @@ export class AuthController {
     await this.registerService.issueRegisterCode(request.user.id);
   }
 
+  //RoleGuard empty array means anyone can access it
+  @UseGuards(RoleGuard([]))
   @Post('register/verify')
   public async verifyRegister(@Body() body: VerifyRegisterDto) {
     const success = await this.registerService.verifyRegisterCode(body.code);
