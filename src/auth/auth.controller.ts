@@ -92,10 +92,8 @@ export class AuthController {
         email: user.email,
       })
     ).access_token;
-    console.log('hihi2');
     const { refreshToken, ...refreshCookieOption } =
       this.authService.getCookieWithJwtRefreshToken(user);
-    console.log('hihi3');
     await this.usersService.setCurrentRefreshToken(user.id, refreshToken);
     //safe way is to send refresh token as cookie, and access token as json payload
     response.cookie('Refresh', refreshToken, refreshCookieOption);
@@ -110,7 +108,7 @@ export class AuthController {
   }
 
   //RoleGuard empty array means anyone can access it
-  @UseGuards(RoleGuard([]))
+  // @UseGuards(RoleGuard([]))
   @Post('register/verify')
   public async verifyRegister(@Body() body: VerifyRegisterDto) {
     const success = await this.registerService.verifyRegisterCode(body.code);
