@@ -15,6 +15,7 @@ import { MailerModule } from '../mailer/mailer.module';
 import { RegisterService } from './register.service';
 import { UsersModule } from 'src/users/users.module';
 import { IsUserStrategy } from './strategies/is-user.strategy';
+import { PasswordService } from './password.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { IsUserStrategy } from './strategies/is-user.strategy';
     JwtRefreshStrategy,
     IsUserStrategy,
     RegisterService,
+    PasswordService,
   ],
   controllers: [AuthController],
 })

@@ -10,6 +10,7 @@ import { ChangePasswordService } from '../change-password/change-password.servic
 import { AuthGuard } from '@nestjs/passport';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('auth')
 @UseGuards(AuthGuard('jwt'))
@@ -17,6 +18,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class ChangePasswordController {
   constructor(private readonly changePasswordService: ChangePasswordService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
   public async changePassword(
     @Res() res,

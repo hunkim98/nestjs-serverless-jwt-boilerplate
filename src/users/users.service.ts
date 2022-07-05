@@ -170,6 +170,19 @@ export class UsersService {
     }
   }
 
+  public async changeUserPassword(id: number, newPassword: string) {
+    try {
+      return await this.prisma.user.update({
+        where: { id: id },
+        data: {
+          password: bcrypt.hashSync(newPassword, 10),
+        },
+      });
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   public async updateProfileUser(
     id: string,
     userProfileDto: UserProfileDto,

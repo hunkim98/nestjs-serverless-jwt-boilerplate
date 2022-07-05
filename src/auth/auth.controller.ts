@@ -30,6 +30,8 @@ import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
 import { RefreshResDto } from './dto/response/refresh.dto';
 import RoleGuard from './guards/role.guard';
 import { IsUserGuard } from './guards/is-user.guard';
+import { PasswordService } from './password.service';
+import { ChangePasswordDto } from './dto/body/password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,6 +42,7 @@ export class AuthController {
     private readonly usersService: UsersService,
     private readonly registerService: RegisterService,
     private readonly authService: AuthService,
+    private readonly passwordService: PasswordService,
   ) {}
 
   @Get('email')
@@ -54,6 +57,20 @@ export class AuthController {
     const isUser = req.user && true;
     console.log(isUser);
     return 'success';
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('password')
+  public async changePassword(
+    @Req() request: RequestWithUser,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    const changedUser = await this.passwordService.changePassword(
+      request.user.id,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword1,
+    );
+    return changedUser ? true : false;
   }
 
   @Post('login')
