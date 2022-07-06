@@ -8,18 +8,26 @@ import {
   UseGuards,
   HttpStatus,
   NotFoundException,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { IUsers } from './interfaces/users.interface';
 import { ApiTags } from '@nestjs/swagger';
+import { IsNicknameUsedBodyDto } from './dto/nickname.dto';
 
 @ApiTags('users')
 // @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('/nickname/duplicate')
+  public async isNicknameUsed(@Body() body: IsNicknameUsedBodyDto) {
+    const user = await this.usersService.findUserByNickname(body.nickname);
+    return user ? false : true;
+  }
 
   @Get('/:userId/profile')
   public async getUser(

@@ -11,7 +11,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleService } from './google.service';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { AuthService } from './auth.service';
-import { MailerModule } from '../mailer/mailer.module';
 import { RegisterService } from './register.service';
 import { UsersModule } from 'src/users/users.module';
 import { IsUserStrategy } from './strategies/is-user.strategy';
@@ -23,7 +22,6 @@ import { PasswordService } from './password.service';
     // TypeOrmModule.forFeature([Users]),
     PassportModule,
     JwtModule.register({}),
-    MailerModule,
   ],
   providers: [
     LoginService,

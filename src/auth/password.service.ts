@@ -1,14 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { MailerService } from 'src/mailer/mailer.service';
+
 import { User } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class PasswordService {
   constructor(
     private readonly usersService: UsersService,
     private readonly mailerService: MailerService,
+    private prisma: PrismaService,
   ) {}
 
   public async changePassword(
@@ -42,7 +45,41 @@ export class PasswordService {
         context: {
           title: '비밀번호 변경',
           description: '비밀번호 변경이 완료되었습니다',
-          nameUser: user.nickname,
+          nickname: user.nickname,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  public async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const userUpdate = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: bcrypt.hashSync(randomPassword, 10) },
+    });
+    this.sendMailForgotPassword(userUpdate, randomPassword);
+    return userUpdate;
+  }
+
+  private sendMailForgotPassword(user: User, password: string): void {
+    //title, nameuser, description
+    this.mailerService
+      .sendMail({
+        to: user.email,
+        subject: '임시 비밀번호가 발급되었습니다',
+        text: '임시 비밀번호가 발급되었습니다',
+        template: 'forgotPassword',
+        context: {
+          title: '임시 비밀번호가 발급되었습니다',
+          description: '임시 비밀번호가 발급되었습니다',
+          nickname: user.nickname,
+          password: password,
         },
       })
       .then((response) => {

@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/body/register.dto';
-import { MailerService } from '../mailer/mailer.service';
+
 import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class RegisterService {

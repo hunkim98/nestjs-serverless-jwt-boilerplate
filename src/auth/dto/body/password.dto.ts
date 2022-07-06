@@ -7,9 +7,12 @@ export class ChangePasswordDto {
 
   @IsNotEmpty()
   @IsString()
-  readonly newPassword1: string;
+  readonly newPassword: string;
+}
 
+export class ForgotPasswordDto {
   @IsNotEmpty()
+  @IsEmail()
   @IsString()
-  readonly newPassword2: string;
+  readonly email: string;
 }

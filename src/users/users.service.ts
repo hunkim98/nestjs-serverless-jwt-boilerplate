@@ -28,6 +28,13 @@ export class UsersService {
     }
   }
 
+  public async findUserByNickname(nickname: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { nickname: nickname },
+    });
+    return user;
+  }
+
   public async getUserVerificationInfo(verificationId: number) {
     return await this.prisma.verification.findFirst({
       where: { id: verificationId },

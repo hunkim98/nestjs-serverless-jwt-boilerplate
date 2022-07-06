@@ -31,7 +31,7 @@ import { RefreshResDto } from './dto/response/refresh.dto';
 import RoleGuard from './guards/role.guard';
 import { IsUserGuard } from './guards/is-user.guard';
 import { PasswordService } from './password.service';
-import { ChangePasswordDto } from './dto/body/password.dto';
+import { ChangePasswordDto, ForgotPasswordDto } from './dto/body/password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,7 +60,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @Post('password')
+  @Post('password/change')
   public async changePassword(
     @Req() request: RequestWithUser,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -68,7 +68,15 @@ export class AuthController {
     const changedUser = await this.passwordService.changePassword(
       request.user.id,
       changePasswordDto.oldPassword,
-      changePasswordDto.newPassword1,
+      changePasswordDto.newPassword,
+    );
+    return changedUser ? true : false;
+  }
+
+  @Post('password/forgot')
+  public async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    const changedUser = await this.passwordService.forgotPassword(
+      forgotPasswordDto.email,
     );
     return changedUser ? true : false;
   }
