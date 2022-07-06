@@ -36,12 +36,6 @@ export class UsersService {
 
   public async findByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { email: email } });
-    // const user = await this.userRepository.findOne({
-    //   where: {
-    //     email: email,
-    //   },
-    // });
-
     if (!user) {
       throw new NotFoundException(`User ${email} not found`);
     }
@@ -53,19 +47,11 @@ export class UsersService {
     const user = await this.prisma.user.findFirst({
       where: { socialLoginId: socialLoginId },
     });
-    // const user = await this.userRepository.findOne({
-    //   where: { socialLoginId },
-    // });
     return user;
   }
 
   public async findById(id: number): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { id: id } });
-    // const user = await this.userRepository.findOne({
-    //   where: {
-    //     id: id,
-    //   },
-    // });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -80,7 +66,6 @@ export class UsersService {
       where: { id: id },
       data: { currentHashedRefreshToken: currentHashedRefreshToken },
     });
-    // await this.userRepository.update({ id }, { currentHashedRefreshToken });
   }
 
   async getUserIfRefreshTokenMatches(
@@ -103,12 +88,6 @@ export class UsersService {
       where: { id: id },
       data: { currentHashedRefreshToken: null },
     });
-    // return this.userRepository.update(
-    //   { id },
-    //   {
-    //     currentHashedRefreshToken: null,
-    //   },
-    // );
   }
 
   public async create(registerUserDto: RegisterDto): Promise<User> {
@@ -133,7 +112,7 @@ export class UsersService {
     }
   }
 
-  public async createWithGoogle() {}
+  // public async createWithGoogle() {}
 
   public async updateByEmail(email: string): Promise<User> {
     try {
@@ -153,18 +132,12 @@ export class UsersService {
     password: string,
   ): Promise<User> {
     try {
-      // const user = await this.userRepository.findOne({
-      //   where: { email: email },
-      // });
-      // user.password = bcrypt.hashSync(password, 10);
-
       return await this.prisma.user.update({
         where: { email: email },
         data: {
           password: bcrypt.hashSync(password, 10),
         },
       });
-      // return await this.userRepository.save(user);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
@@ -188,21 +161,12 @@ export class UsersService {
     userProfileDto: UserProfileDto,
   ): Promise<User> {
     try {
-      // const user = await this.userRepository.findOne({
-      //   where: { id: Number(id) },
-      // });
-      // user.nickname = userProfileDto.nickname;
-      // user.email = userProfileDto.email;
-      // user.username = userProfileDto.username;
-
       return await this.prisma.user.update({
         where: { id: Number(id) },
         data: {
           isSnsAgreed: userProfileDto.isSnsAgreed,
         },
       });
-
-      // return await this.userRepository.save(user);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
