@@ -1,0 +1,72 @@
+org: pickgeul
+app: pickgeul-server
+service: pickgeul-server-prod
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-optimize
+  - serverless-offline
+
+custom:
+  customDomain:
+    domainName: ${param:DOMAIN}
+    certificateName: '*.pickgeul.com'
+    basePath: ''
+    createRoute53Record: true
+  optimize:
+    external: ['@prisma/client', '.prisma/client']
+#   enterprise:
+#     collectLambdaLogs: false
+#     disableAwsSpans: true
+#     disableHttpSpans: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-northeast-1
+  timeout: 5
+  environment:
+    DATABASE_URL: ${param:DATABASE_URL}
+    DATABASE_USERNAME: ${param:DATABASE_USERNAME}
+    DATABASE_PASSWORD: ${param:DB_PASSWORD}
+    DATABASE_NAME: ${param:DATABASE_NAME}
+
+    EMAIL_SERVICE: ${param:EMAIL_SERVICE}
+    EMAIL_HOST: ${param:EMAIL_HOST}
+    EMAIL_PORT: ${param:EMAIL_PORT}
+    EMAIL_AUTH_USER: ${param:EMAIL_AUTH_USER}
+    EMAIL_AUTH_PASSWORD: ${parma:EMAIL_AUTH_PASSWORD}
+
+    DOMIAN: ${param:DOMAIN}
+    DATABASE_URL: ${param:NODE_ENV}
+    JWT_ACCESS_TOKEN_SECRET: ${param:JWT_ACCESS_TOKEN_SECRET}
+    JWT_ACCESS_TOKEN_EXPIRATION_TIME: ${param:JWT_ACCESS_TOKEN_EXPIRATION_TIME}
+    JWT_REFRESH_TOKEN_SECRET: ${param:JWT_REFRESH_TOKEN_SECRET}
+    JWT_REFRESH_TOKEN_EXPIRATION_TIME: $JWT_REFRESH_TOKEN_EXPIRATION_TIME}
+    
+  vpc:
+    securityGroupIds:
+      - sg-0286c520b80ef4fef
+    subnetIds:
+      - subnet-09a9cee8c59795ce1
+      - subnet-0a8b9f2cb0d77483c
+      - subnet-071f0adffcfe9fb30
+  logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
+  logs:
+    restApi: # Optional configuration which specifies if API Gateway logs are used. This can either be set to `true` to use defaults, or configured via subproperties. Can only be configured if API Gateway is inside a stack.
+      accessLogging: true # Optional configuration which enables or disables access logging. Defaults to true.
+      executionLogging: true # Optional configuration which enables or disables execution logging. Defaults to true.
+      level: ERROR # Optional configuration which specifies the log level to use for execution logging. May be set to either INFO or ERROR.
+      fullExecutionData: true # Optional configuration which specifies whether or not to log full requests/responses for execution logging. Defaults to true.
+package:
+  individually: true
+
+functions:
+  main: # The name of the lambda function
+    # The module 'handler' is exported in the file 'src/lambda'
+    timeout: 10
+    handler: src/lambda.handler
+    events:
+      - http:
+          method: any
+          path: /{any+}

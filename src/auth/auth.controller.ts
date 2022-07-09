@@ -45,12 +45,6 @@ export class AuthController {
     private readonly passwordService: PasswordService,
   ) {}
 
-  @Get('email')
-  public async emailTest() {
-    this.registerService.sendMailTest();
-    return 'success';
-  }
-
   @UseGuards(IsUserGuard)
   @Get('check')
   public async check(@Req() req) {

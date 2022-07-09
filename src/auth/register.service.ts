@@ -64,32 +64,32 @@ export class RegisterService {
     return false;
   }
 
-  sendMailTest(): void {
-    this.mailerService
-      .sendMail({
-        to: 'hunkim98@gmail.com',
-        // we have set from in the service constructor
-        // from: this.configService.get('EMAIL_AUTH_USER'),
-        subject: '이메일 인증',
-        text: '이메일 인증',
-        template: 'index',
-        context: {
-          title: '이메일 인증',
-          description: '이메일 인증을 하려면 아래 버튼을 클릭해주세요',
-          nameUser: 'hunkim98',
-          url: `${this.configService.get<string>('CLIENT_URL')}/verify/${2222}`,
-          urlButtonText: '등록 확인',
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        console.log('User Registration: Send Mail successfully!');
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log('User Registration: Send Mail Failed!');
-      });
-  }
+  // sendMailTest(): void {
+  //   this.mailerService
+  //     .sendMail({
+  //       to: 'hunkim98@gmail.com',
+  //       // we have set from in the service constructor
+  //       // from: this.configService.get('EMAIL_AUTH_USER'),
+  //       subject: '이메일 인증',
+  //       text: '이메일 인증',
+  //       template: 'index',
+  //       context: {
+  //         title: '이메일 인증',
+  //         description: '이메일 인증을 하려면 아래 버튼을 클릭해주세요',
+  //         nameUser: 'hunkim98',
+  //         url: `${this.configService.get<string>('DOMAIN')}/verify/${2222}`,
+  //         urlButtonText: '등록 확인',
+  //       },
+  //     })
+  //     .then((response) => {
+  //       console.log(response);
+  //       console.log('User Registration: Send Mail successfully!');
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       console.log('User Registration: Send Mail Failed!');
+  //     });
+  // }
 
   private sendMailRegisterUser(user: User, verificationCode: string): void {
     this.mailerService
@@ -103,7 +103,7 @@ export class RegisterService {
           description: '이메일 인증을 하려면 아래 버튼을 클릭해주세요',
           nameUser: user.nickname,
           url: `${this.configService.get<string>(
-            'CLIENT_URL',
+            'DOMAIN',
           )}/verify/${verificationCode}`,
           urlButtonText: '등록 확인',
         },
