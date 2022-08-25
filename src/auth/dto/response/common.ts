@@ -1,5 +1,10 @@
+import { Role } from '@prisma/client';
+
 export class VerifiedUserResDto {
   accessToken: string;
   isEmailVerified: boolean;
-  membershipLevel: number;
+  role: Role;
+  email: string;
+  name: string;
+  telephone: string;
 }

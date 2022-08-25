@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -10,10 +11,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false) //for soft delete
 
   email                     String           @unique
   nickname                  String           @unique
@@ -24,19 +31,21 @@ model User {
   currentHashedRefreshToken String?
   socialLoginType           SocialLoginType?
   socialLoginId             String?
+  telephone                 String
   verified                  Boolean          @default(false)
-  membershipLevel           Int              @default(0)
+  role                      Role             @default(USER)
 
   verification Verification @relation(fields: [verificationId], references: [id])
 
   verificationId Int @unique
+
   @@map("tb_user")
 }
 
 model Verification {
   id       Int      @id @default(autoincrement())
   expireAt DateTime
-  code     String
+  code     String   @unique
   user     User?
 
   @@map("tb_verification")

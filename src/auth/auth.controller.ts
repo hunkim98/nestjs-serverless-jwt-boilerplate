@@ -8,12 +8,12 @@ import {
   Res,
   Redirect,
   BadRequestException,
+  Param,
 } from '@nestjs/common';
 
 import { LoginService } from './login.service';
 import { GoogleLoginDto, LoginDto } from './dto/body/login.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
 import { GoogleAuthBodyDto, GoogleAuthResDto } from './dto/google.auth.dto';
 import { UsersService } from 'src/users/users.service';
@@ -27,11 +27,13 @@ import RequestWithUser from './interfaces/request-with-user.interface';
 import { request } from 'http';
 import { JwtGuard } from './guards/jwt.guard';
 import { VerifyRegisterDto } from './dto/body/verifyRegister.dto';
-import { RefreshResDto } from './dto/response/refresh.dto';
+import { RefreshResDto } from './dto/response/refresh.res.dto';
 import RoleGuard from './guards/role.guard';
 import { IsUserGuard } from './guards/is-user.guard';
 import { PasswordService } from './password.service';
-import { ChangePasswordDto, ForgotPasswordDto } from './dto/body/password.dto';
+import { ForgotPasswordDto, PostPasswordDto } from './dto/body/password.dto';
+import { PostPasswordResDto } from './dto/response/post.password.res.dto';
+import { GetPasswordTokenResDto } from './dto/response/get.password.token.res.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -45,6 +47,7 @@ export class AuthController {
     private readonly passwordService: PasswordService,
   ) {}
 
+  //this is just for checking
   @UseGuards(IsUserGuard)
   @Get('check')
   public async check(@Req() req) {
@@ -54,17 +57,27 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @Post('password/change')
+  @Post('password')
   public async changePassword(
     @Req() request: RequestWithUser,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    const changedUser = await this.passwordService.changePassword(
-      request.user.id,
-      changePasswordDto.oldPassword,
-      changePasswordDto.newPassword,
-    );
-    return changedUser ? true : false;
+    @Body() changePasswordDto: PostPasswordDto,
+  ): Promise<PostPasswordResDto> {
+    const changedUser = await this.passwordService.changePassword({
+      uid: request.user.id,
+      password: changePasswordDto.password,
+    });
+    return { success: changedUser ? true : false };
+  }
+
+  @Get('password/token/:code')
+  public async returnAccessTokenFromVerificationToken(
+    @Param('code') code: string,
+  ): Promise<GetPasswordTokenResDto> {
+    const accessToken =
+      await this.passwordService.returnAccessTokenFromVerificationToken({
+        code,
+      });
+    return { accessToken };
   }
 
   @Post('password/forgot')
@@ -94,7 +107,10 @@ export class AuthController {
     return {
       accessToken: accessToken,
       isEmailVerified: user.verified,
-      membershipLevel: user.membershipLevel,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      telephone: user.telephone,
     };
   }
 
@@ -122,14 +138,18 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Get('register/token')
-  public async getRegisterToken(@Req() request: RequestWithUser) {
+  public async getRegisterToken(
+    @Req() request: RequestWithUser,
+  ): Promise<void> {
     await this.registerService.issueRegisterCode(request.user.id);
   }
 
   //RoleGuard empty array means anyone can access it
   // @UseGuards(RoleGuard([]))
   @Post('register/verify')
-  public async verifyRegister(@Body() body: VerifyRegisterDto) {
+  public async verifyRegister(
+    @Body() body: VerifyRegisterDto,
+  ): Promise<boolean> {
     const success = await this.registerService.verifyRegisterCode(body.code);
     if (!success) {
       throw new BadRequestException('Token has expired');
@@ -152,7 +172,10 @@ export class AuthController {
     return {
       accessToken: accessToken,
       isEmailVerified: request.user.verified,
-      membershipLevel: request.user.membershipLevel,
+      role: request.user.role,
+      email: request.user.email,
+      name: request.user.name,
+      telephone: request.user.telephone,
     };
   }
 
@@ -161,7 +184,7 @@ export class AuthController {
   public async logOut(
     @Req() request: RequestWithUser,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     const refreshOption = this.authService.getCookiesForLogOut();
     await this.usersService.removeRefreshToken(request.user.id);
     response.cookie('Refresh', '', refreshOption);
@@ -174,16 +197,16 @@ export class AuthController {
   //   console.log('google login called');
   // }
 
-  @Post('google/authenticate')
-  public async authenticateGoogle(
-    @Body() googleAuthBodyDto: GoogleAuthBodyDto,
-    @Req() req,
-  ) {
-    const result = await this.googleService.authenticate(
-      googleAuthBodyDto.token,
-    );
-    return { user: result.user, email: result.email };
-  }
+  // @Post('google/authenticate')
+  // public async authenticateGoogle(
+  //   @Body() googleAuthBodyDto: GoogleAuthBodyDto,
+  //   @Req() req,
+  // ) {
+  //   const result = await this.googleService.authenticate(
+  //     googleAuthBodyDto.token,
+  //   );
+  //   return { user: result.user, email: result.email };
+  // }
 
   // @Get('google/callback') // 2
   // async googleAuthRedirect(@Req() req, @Res() res) {

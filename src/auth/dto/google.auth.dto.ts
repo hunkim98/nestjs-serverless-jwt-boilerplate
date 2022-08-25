@@ -1,5 +1,5 @@
+import { User } from '@prisma/client';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Users } from '../../entities/users.entity';
 
 export class GoogleAuthBodyDto {
   @IsString()
@@ -8,6 +8,6 @@ export class GoogleAuthBodyDto {
 }
 
 export class GoogleAuthResDto {
-  user: Users;
+  user: User;
   email: string;
 }

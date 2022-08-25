@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './interfaces/jwt.payload';
 import { LoginDto } from './dto/body/login.dto';
-import { Users } from '../entities/users.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';

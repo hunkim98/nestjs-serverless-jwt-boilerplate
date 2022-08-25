@@ -6,7 +6,10 @@ import {
   IsBoolean,
 } from 'class-validator';
 
-export class UserProfileDto {
+export class PutUserAccountDto {
   @IsBoolean()
   isSnsAgreed: boolean;
+
+  @IsString()
+  telephone: string;
 }

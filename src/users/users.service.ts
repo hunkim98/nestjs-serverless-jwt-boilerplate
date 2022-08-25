@@ -4,15 +4,12 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Users } from '../entities/users.entity';
-import { IUsers } from './interfaces/users.interface';
-import { UserDto } from './dto/user.dto';
-import * as bcrypt from 'bcrypt';
-import { UserProfileDto } from './dto/user-profile.dto';
+import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from '../auth/dto/body/register.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { PutUserAccountDto } from './dto/body/put.user.account.dto';
 
 @Injectable()
 export class UsersService {
@@ -43,25 +40,16 @@ export class UsersService {
 
   public async findByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { email: email } });
-    if (!user) {
-      throw new NotFoundException(`User ${email} not found`);
-    }
-
     return user;
   }
 
-  public async findBySocialLoginId(socialLoginId: string): Promise<User> {
-    const user = await this.prisma.user.findFirst({
-      where: { socialLoginId: socialLoginId },
-    });
+  public async findByNickname(nickname: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { nickname } });
     return user;
   }
 
   public async findById(id: number): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { id: id } });
-    if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
-    }
     return user;
   }
 
@@ -121,33 +109,11 @@ export class UsersService {
 
   // public async createWithGoogle() {}
 
-  public async updateByEmail(email: string): Promise<User> {
-    try {
-      return await this.prisma.user.update({
-        where: { email: email },
-        data: {
-          password: bcrypt.hashSync(Math.random().toString(36).slice(-8), 8),
-        },
-      });
-    } catch (err) {
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  public async updateByPassword(
-    email: string,
-    password: string,
-  ): Promise<User> {
-    try {
-      return await this.prisma.user.update({
-        where: { email: email },
-        data: {
-          password: bcrypt.hashSync(password, 10),
-        },
-      });
-    } catch (err) {
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
-    }
+  public async findBySocialLoginId(socialLoginId: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({
+      where: { socialLoginId: socialLoginId },
+    });
+    return user;
   }
 
   public async changeUserPassword(id: number, newPassword: string) {
@@ -163,19 +129,44 @@ export class UsersService {
     }
   }
 
-  public async updateProfileUser(
-    id: string,
-    userProfileDto: UserProfileDto,
-  ): Promise<User> {
+  public async getUserAccountInfo(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new HttpException(
+        '존재하지 않는 유저입니다',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    return {
+      name: user.name,
+      nickname: user.nickname,
+      email: user.email,
+      telephone: user.telephone,
+      isSnsAgree: user.isSnsAgreed,
+    };
+  }
+
+  public async updateUserAccountInfo(
+    id: number,
+    userAccountDto: PutUserAccountDto,
+  ) {
     try {
-      return await this.prisma.user.update({
-        where: { id: Number(id) },
+      const user = await this.prisma.user.update({
+        where: { id },
         data: {
-          isSnsAgreed: userProfileDto.isSnsAgreed,
+          isSnsAgreed: userAccountDto.isSnsAgreed,
+          telephone: userAccountDto.telephone,
         },
       });
+      return {
+        name: user.name,
+        nickname: user.nickname,
+        email: user.email,
+        telephone: user.telephone,
+        isSnsAgree: user.isSnsAgreed,
+      };
     } catch (err) {
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      throw new HttpException(err, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

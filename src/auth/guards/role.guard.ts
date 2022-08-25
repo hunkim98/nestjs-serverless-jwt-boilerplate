@@ -2,20 +2,15 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
-  Injectable,
   mixin,
   Type,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
-import RequestWithUser from 'src/auth/interfaces/request-with-user.interface';
+import { Role } from '@prisma/client';
+
+import RequestWithUser from '../../auth/interfaces/request-with-user.interface';
 import { JwtGuard } from './jwt.guard';
 
-const matchRoles = (roles: number[], userRole: number) => {
-  return roles.some((role) => role === userRole);
-};
-
-const RoleGuard = (roles: number[]): Type<CanActivate> => {
+const RoleGuard = (requiredRoles: Role[]): Type<CanActivate> => {
   class RoleGuardMixin extends JwtGuard {
     async canActivate(context: ExecutionContext) {
       await super.canActivate(context);
@@ -24,7 +19,7 @@ const RoleGuard = (roles: number[]): Type<CanActivate> => {
       if (!user) {
         throw new ForbiddenException('User does not exist');
       }
-      return matchRoles(roles, user.membershipLevel);
+      return requiredRoles.some((role) => user.role.includes(role));
     }
   }
   return mixin(RoleGuardMixin);

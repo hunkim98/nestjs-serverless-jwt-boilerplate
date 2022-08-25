@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { CookieOptions } from 'express';
-import { Users } from '../entities/users.entity';
 import { Tokens } from './dto/token.dto';
 import { JwtPayload } from './interfaces/jwt.payload';
 
@@ -37,7 +36,7 @@ export class AuthService {
   }
 
   public getCookieWithJwtAccessToken(
-    user: Users,
+    user: User,
   ): CookieOptions & { accessToken: string } {
     const payload = { uid: user.id, email: user.email };
     const token = this.jwtService.sign(payload, {

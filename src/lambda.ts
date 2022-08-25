@@ -18,7 +18,6 @@ const express = require('express');
 const binaryMimeTypes: string[] = [];
 
 let cachedServer: Server;
-process.env.TZ = 'Asia/Seoul';
 
 async function bootstrapServer(): Promise<Server> {
   if (!cachedServer) {

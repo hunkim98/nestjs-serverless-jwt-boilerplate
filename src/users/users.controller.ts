@@ -9,13 +9,20 @@ import {
   HttpStatus,
   NotFoundException,
   Post,
+  Req,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGuard } from '@nestjs/passport';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { IUsers } from './interfaces/users.interface';
 import { ApiTags } from '@nestjs/swagger';
-import { IsNicknameUsedBodyDto } from './dto/nickname.dto';
+import RoleGuard from '../auth/guards/role.guard';
+import { PostNicknameDto } from './dto/body/post.nickname.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import RequestWithUser from '../auth/interfaces/request-with-user.interface';
+import { GetUserAccountResDto } from './dto/response/get.user.account.res.dto';
+import { PutUserAccountResDto } from './dto/response/put.user.account.res.dto';
+import { PutUserAccountDto } from './dto/body/put.user.account.dto';
+import { PostEmailDto } from './dto/body/post.email.dto';
+import { PostEmailResDto } from './dto/response/post.email.res.dto';
 
 @ApiTags('users')
 // @UseGuards(AuthGuard('jwt'))
@@ -23,47 +30,51 @@ import { IsNicknameUsedBodyDto } from './dto/nickname.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(RoleGuard(['ADMIN']))
+  @Get('isAdmin')
+  public isAdmin(): boolean {
+    return true;
+  }
+
   @Post('/nickname/duplicate')
-  public async isNicknameUsed(@Body() body: IsNicknameUsedBodyDto) {
+  public async isNicknameUsed(@Body() body: PostNicknameDto): Promise<boolean> {
     const user = await this.usersService.findUserByNickname(body.nickname);
     return user ? false : true;
   }
 
-  @Get('/:userId/profile')
-  public async getUser(
-    @Res() res,
-    @Param('userId') userId: string,
-  ): Promise<IUsers> {
-    const user = await this.usersService.findById(Number(userId));
-
-    if (!user) {
-      throw new NotFoundException('User does not exist!');
-    }
-
-    return res.status(HttpStatus.OK).json({
-      user: user,
-      status: 200,
-    });
+  @UseGuards(JwtGuard)
+  @Get('account')
+  public async getUserAccountInfo(
+    @Req() request: RequestWithUser,
+  ): Promise<GetUserAccountResDto> {
+    const user = await this.usersService.getUserAccountInfo(request.user.id);
+    return user;
   }
 
-  @Put('/:userId/profile')
-  public async updateProfileUser(
-    @Res() res,
-    @Param('userId') userId: string,
-    @Body() userProfileDto: UserProfileDto,
-  ): Promise<any> {
-    try {
-      await this.usersService.updateProfileUser(userId, userProfileDto);
-
-      return res.status(HttpStatus.OK).json({
-        message: 'User Updated successfully!',
-        status: 200,
-      });
-    } catch (err) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Error: User not updated!',
-        status: 400,
-      });
+  @Post('email')
+  public async findEmailByNickname(
+    @Body() body: PostEmailDto,
+  ): Promise<PostEmailResDto> {
+    const user = await this.usersService.findByNickname(body.nickname);
+    if (!user) {
+      throw new HttpException(
+        'The user does not exist',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
+    return { email: user.email };
+  }
+
+  @UseGuards(JwtGuard)
+  @Put('account')
+  public async updateUserAccountInfo(
+    @Req() request: RequestWithUser,
+    @Body() userAccountDto: PutUserAccountDto,
+  ): Promise<PutUserAccountResDto> {
+    const user = await this.usersService.updateUserAccountInfo(
+      request.user.id,
+      userAccountDto,
+    );
+    return user;
   }
 }

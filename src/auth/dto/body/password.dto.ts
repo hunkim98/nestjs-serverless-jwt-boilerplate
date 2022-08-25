@@ -1,13 +1,8 @@
 import { MaxLength, IsNotEmpty, IsEmail, IsString } from 'class-validator';
 
-export class ChangePasswordDto {
-  @IsNotEmpty()
+export class PostPasswordDto {
   @IsString()
-  readonly oldPassword: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly newPassword: string;
+  readonly password: string;
 }
 
 export class ForgotPasswordDto {

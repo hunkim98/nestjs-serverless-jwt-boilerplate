@@ -1,150 +1,64 @@
-# NestJSApiBoilerplateJWT
+# Nestjs serverless jwt boilerplate
 
-An API Boilerplate to create a ready-to-use REST API in seconds with NestJS 8.x and Passport Auth JWT System :heart_eyes_cat:
+This is a boilerplate for creating a nestjs backend server with serverless. It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
+
+Since this project uses serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. 
+
+For instance, serverless does not support `relative` imports. All imports from another file should be done in a `absolute` way. So you cannot use `src/file.ts` to import a function. You should instead find its path relative to the current file and write something like `../../file.ts`
 
 ## Installation
 
-```bash
-   $ npm install
-```
+`yarn`
 
-## Set Enviroment for secret key JWT and other configurations
+## Prior knowledge Required
 
-```bash
-   $ cp .env.example .env
-```
+1. Prisma
 
-To set up on multiple environments, such as dev, stage or prod, we do as follows:
+This project uses Prisma for ORM, so some knowledge on prisma is required. Prisma is well documented on [Prisma](https://www.prisma.io/docs/concepts). Take a look on the prisma document before you start this project.
 
-```bash
-   $ cp .env.example .env.dev # or .env.stage, etc
-```
+2. AWS VPC configuration
 
-## Config settings .env for send notification when a user registers, forgot password or change password
+If you want to deploy your serverless on a real server, you need to have a VPC configured in AWS. then you need to add information on serverless environment variables (DATABASE_URL, SECURITY_GROUP_ID, PRIVATE_SUBNET, ..)
 
-```
-   EMAIL_HOST=smtp.mailtrap.io
-   EMAIL_PORT=2525
-   EMAIL_AUTH_USER=[:user]
-   EMAIL_AUTH_PASSWORD=[:password]
-   EMAIL_DEBUG=true
-   EMAIL_LOGGER=true
-   EMAIL_LAYOUT_DIR='templates/emails/'
-   EMAIL_PARTIAL_DIR='templates/emails/'
-   EMAIL_VIEW_PATH='/templates/emails/'
-   EMAIL_DEFAULT_LAYOUT='index'
-```
+3. Google SMTP mail service
 
-## Config settings ormconfig.json for connect MySQL
-Once the database has been configured, start the Nest App via ```npm run start:dev``` it automatically synchronizes the entities so ready to use. :heart_eyes_cat:
+This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google.
 
-```
-{
-    "type": "mysql",
-    "host": "localhost",
-    "port": 3306,
-    "username": "my_user",
-    "password": "my_password",
-    "database": "my_database",
-    "synchronize": true,
-    "logging": false,
-    "entities": [
-       "dist/**/*.entity.js"
-    ],
-    "migrations": [
-       "dist/migrations/**/*.js"
-    ],
-    "subscribers": [
-       "dist/subscriber/**/*.js"
-    ],
-    "cli": {
-       "migrationsDir": "src/migrations",
-       "subscribersDir": "src/subscriber"
-    }
- }
-```
+## How to code in local environment
 
-## Install TypeScript Node
+1. Copy the elements in .env.example and create a .env file in the root directory
 
-```bash
-   $ npm install -g ts-node
-```
+You must fill out DATABASE_URL, CLIENT_URL, JWT_ACCESS_TOKEN_SECRET, JWT_ACCESS_TOKEN_EXPIRATION_TIME, JWT_REFRESH_TOKEN_SECRET, JWT_REFRESH_TOKEN_EXPIRATION_TIME. 
 
-## Running migrations with typeorm
+2. Install MYSQL workbench
 
-```bash
-   $ ts-node node_modules/.bin/typeorm migration:run
-```
+Install MYSQL workbench if you do not have one. [https://www.mysql.com/products/workbench/].
 
-or
+3. Create a local database with name `nestjs-test`
 
-```bash
-   $ node_modules/.bin/typeorm migration:run
-```
+After installing mysql workbench, you should create a schema named `nestjs-test`. If you want to name your schema with a different name, you are free to do so. However, remember that you should also change the local env DATABASE_URL too!
 
-## Running the app
+4. Set localhost database username and password 
 
-```bash
-    # development
-    $ npm run start
+If you see env.example you can see that DATABASE_URL is `mysql://root:root1234@localhost:3306/nestjs-test?schema=public` the root:root1234 is username:password, thus username is `root` and password is `root1234`. In mysql workbench, set your username to `root` and your password to `root1234`. Or, if you want to customize it write your own username and password, but do not forget to modify the DATABASE_URL accordingly.
 
-    # watch mode
-    $ npm run start:dev
+5. Run prisma migrate to apply the prisma.schema to the localhost DB 
 
-    # production mode
-    $ npm run start:prod
-```
+Run `prisma migrate dev`. This will create tables in the localhost DB.
 
-## Docker
+6. Run `yarn start:dev` and see if your database connects with no problem
 
-There is a `docker-compose.yml` file for starting MySQL with Docker.
+## Serverless deployment
 
-`$ docker-compose up`
+1. Go to AWS and configure your VPC and create a MYSQL RDS
 
-After running, you can stop the Docker container with
+You must have subnets, security group id, and RDS for serverless to use your aws account.
 
-`$ docker-compose down`
+The RDS database url should be remembered
 
+2. Go to [Serverless](https://www.serverless.com/) and create an account.
 
-## Url Swagger for Api Documentation
-```
-http://127.0.0.1:3000/api/doc
-```
+3. Fill the env variables that are shown as ${param: NAME} in serverless.yml
 
-## Getting secure resource with Curl
+4. In the terminal, run `sls deploy --stage "stage_name"`
 
-```bash
-    $ curl -H 'content-type: application/json' -v -X GET http://127.0.0.1:3000/api/secure  -H 'Authorization: Bearer [:token]'
-```
-
-## Generate Token JWT Authentication with Curl
-
-```bash
-   $ curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.it", "password": "secret"}' http://127.0.0.1:3000/api/auth/login
-
-```
-
-## Registration user with Curl
-
-```bash
-   $ curl -H 'content-type: application/json' -v -X POST -d '{"name": "tony", "email": "tony_admin@nest.it", "username":"tony_admin", "password": "secret"}' http://127.0.0.1:3000/api/auth/register
-
-```
-
-## Forgot password with curl
-
-```bash
-   $ curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.it"}' http://127.0.0.1:3000/api/auth/forgot-password
-```
-
-## Change password User with curl
-
-```bash
-   $ curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.it", "password": "secret123"}' http://127.0.0.1:3000/api/auth/change-password  -H 'Authorization: Bearer [:token]'
-```
-
-## Update profile User with curl
-
-```bash
-   $ curl -H 'content-type: application/json' -v -X PUT -d '{"name": "tony", "email": "tony_admin@nest.it", "username": "tony_admin"}' http://127.0.0.1:3000/api/users/:id/profile  -H 'Authorization: Bearer [:token]'
-```

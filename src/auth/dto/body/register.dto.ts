@@ -1,4 +1,45 @@
-import { UserDto } from 'src/users/dto/user.dto';
+import {
+  MaxLength,
+  IsNotEmpty,
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
+/** Remember to update this dto to match it with User entity */
+export class RegisterDto {
+  @IsEmail()
+  readonly email: string;
 
-/** register 단계에서 이름은 일단 없는 것으로 설정한다 */
-export type RegisterDto = UserDto;
+  @IsString()
+  @MaxLength(30)
+  readonly nickname: string;
+
+  @IsString()
+  @MaxLength(30)
+  readonly name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(60)
+  password: string;
+
+  @IsString()
+  telephone: string;
+
+  @IsBoolean()
+  isTermsAgreed: boolean;
+
+  @IsBoolean()
+  isSnsAgreed: boolean;
+
+  @IsOptional()
+  readonly socialLoginType: SocialLoginType;
+
+  @IsOptional()
+  readonly socialLoginId: string;
+}
+
+enum SocialLoginType {
+  GOOGLE = 'GOOGLE',
+}

@@ -18,14 +18,6 @@ export class IsUserStrategy extends PassportStrategy(Strategy, 'is-user') {
   }
 
   async validate(payload: JwtPayload) {
-    console.log('hihihi');
     return true;
-    // console.log('hi', payload);
-    // const user = await this.usersService.findById(payload.uid);
-    // if (!user) {
-    //   return false;
-    // } else {
-    //   return true;
-    // }
   }
 }
