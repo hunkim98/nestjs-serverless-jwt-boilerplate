@@ -2,7 +2,9 @@
 
 This is a boilerplate for creating a nestjs backend server with serverless. It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
 
-Since this project uses serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. 
+This is a backend server boilerplate of the `fullstack series` [nextjs-admin-jwt-boilerplate](https://github.com/hunkim98/nextjs-admin-jwt-boilerplate), [nextjs-client-jwt-boilerplate](https://github.com/hunkim98/nextjs-client-jwt-boilerplate)
+
+This project can be used with serverless (`Using serverless is not mandatory!`). However, when deployed with serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. So keep in mind to check whether your functions work even in the serverless environment when you deploy.
 
 For instance, serverless does not support `relative` imports. All imports from another file should be done in a `absolute` way. So you cannot use `src/file.ts` to import a function. You should instead find its path relative to the current file and write something like `../../file.ts`
 
@@ -21,11 +23,17 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 # Installation
 
-`yarn` or `npm install`
+```
+$ yarn
+```
+or
+```
+$ npm install
+```
 
 <hr/>
 
-# Prior knowledge Required
+## Prior knowledge Required
 
 ### 1. Prisma
 
@@ -41,7 +49,7 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 <hr/>
 
-# How to code in local environment
+## How to code in local environment
 
 ### 1. Copy the elements in .env.example and create a .env file in the root directory
 
@@ -67,7 +75,7 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 <hr/>
 
-# Serverless deployment
+## Serverless deployment (`Optional!`)
 
 ### 1. Go to AWS and configure your VPC and create a MYSQL RDS
 
