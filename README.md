@@ -6,11 +6,11 @@ Since this project uses serverless, some functions that worked with no problem i
 
 For instance, serverless does not support `relative` imports. All imports from another file should be done in a `absolute` way. So you cannot use `src/file.ts` to import a function. You should instead find its path relative to the current file and write something like `../../file.ts`
 
-## Installation
+# Installation
 
 `yarn`
 
-## Prior knowledge Required
+# Prior knowledge Required
 
 ### 1. Prisma
 
@@ -24,7 +24,7 @@ If you want to deploy your serverless on a real server, you need to have a VPC c
 
 This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google.
 
-## How to code in local environment
+# How to code in local environment
 
 ### 1. Copy the elements in .env.example and create a .env file in the root directory
 
@@ -48,7 +48,7 @@ Run `prisma migrate dev`. This will create tables in the localhost DB.
 
 ### 6. Run `yarn start:dev` and see if your database connects with no problem
 
-## Serverless deployment
+# Serverless deployment
 
 ### 1. Go to AWS and configure your VPC and create a MYSQL RDS
 
