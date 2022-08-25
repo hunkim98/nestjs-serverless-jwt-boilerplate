@@ -33,7 +33,7 @@ $ npm install
 
 <hr/>
 
-## Prior knowledge Required
+# Prior knowledge Required
 
 ### 1. Prisma
 
@@ -49,7 +49,7 @@ $ npm install
 
 <hr/>
 
-## How to code in local environment
+# How to code in local environment
 
 ### 1. Copy the elements in .env.example and create a .env file in the root directory
 
@@ -75,7 +75,7 @@ $ npm install
 
 <hr/>
 
-## Serverless deployment (`Optional!`)
+# Serverless deployment (`Optional!`)
 
 ### 1. Go to AWS and configure your VPC and create a MYSQL RDS
 
