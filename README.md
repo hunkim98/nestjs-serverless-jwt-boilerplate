@@ -1,8 +1,8 @@
 # Nestjs serverless jwt boilerplate
 
-This is a boilerplate for creating a nestjs backend server with serverless. It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
+This is a backend server boilerplate of the `fullstack series` [nextjs-admin-jwt-boilerplate](https://github.com/hunkim98/nextjs-admin-jwt-boilerplate), [nextjs-client-jwt-boilerplate](https://github.com/hunkim98/nextjs-client-jwt-boilerplate) 
 
-This is a backend server boilerplate of the `fullstack series` [nextjs-admin-jwt-boilerplate](https://github.com/hunkim98/nextjs-admin-jwt-boilerplate), [nextjs-client-jwt-boilerplate](https://github.com/hunkim98/nextjs-client-jwt-boilerplate)
+It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
 
 This project can be used with serverless (`Using serverless is not mandatory!`). However, when deployed with serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. So keep in mind to check whether your functions work even in the serverless environment when you deploy.
 
