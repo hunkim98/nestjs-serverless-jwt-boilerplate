@@ -6,11 +6,22 @@ Since this project uses serverless, some functions that worked with no problem i
 
 For instance, serverless does not support `relative` imports. All imports from another file should be done in a `absolute` way. So you cannot use `src/file.ts` to import a function. You should instead find its path relative to the current file and write something like `../../file.ts`
 
+
+### Reminders
+
+> This is the backend framework for my `fullstack` boilerplate.
+> If you are interested in getting to know the client framework and admin framework, check out the below repositories also!
+
+#### For Client: [nextjs-client-jwt-boilerplate](https://github.com/hunkim98/nextjs-client-jwt-boilerplate)
+
+#### For Admin: [nextjs-admin-jwt-boilerplate](https://github.com/hunkim98/nextjs-admin-jwt-boilerplate)
+
 <hr/>
+
 
 # Installation
 
-`yarn`
+`yarn` or `npm install`
 
 <hr/>
 
@@ -38,7 +49,7 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 ### 2. Install MYSQL workbench
 
-- Install MYSQL workbench if you do not have one. [https://www.mysql.com/products/workbench/].
+- Install MYSQL workbench if you do not have one. https://www.mysql.com/products/workbench/.
 
 ### 3. Create a local database with name `nestjs-test`
 
