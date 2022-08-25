@@ -16,7 +16,7 @@ import { GoogleLoginDto, LoginDto } from './dto/body/login.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { GoogleService } from './google.service';
 import { GoogleAuthBodyDto, GoogleAuthResDto } from './dto/google.auth.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/body/register.dto';
 import { RegisterService } from './register.service';
 import { AuthService } from './auth.service';

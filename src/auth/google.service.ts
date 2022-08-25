@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { google, Auth } from 'googleapis';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class GoogleService {

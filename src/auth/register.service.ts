@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { Tokens } from './dto/token.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { registerHtml } from '../mailer/templates/register';
 import { notificationWithLinkHtml } from '../mailer/templates/notificationWithLink';
