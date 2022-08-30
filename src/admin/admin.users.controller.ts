@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import RoleGuard from '../auth/guards/role.guard';
 import { AdminUsersService } from './admin.users.service';
@@ -10,7 +10,9 @@ export class AdminUsersController {
 
   @UseGuards(RoleGuard(['ADMIN']))
   @Get()
-  public async getUsers(): Promise<GetAdminUsersResDto> {
-    return await this.adminUsersService.getUsers();
+  public async getUsers(
+    @Query('page') page: string,
+  ): Promise<GetAdminUsersResDto> {
+    return await this.adminUsersService.getUsers(page);
   }
 }
