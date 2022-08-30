@@ -45,7 +45,7 @@ $ npm install
 
 ### 3. Google SMTP mail service
 
-- This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google.
+- This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google. [How to setup gmail service auth password](https://www.lifewire.com/get-a-password-to-access-gmail-by-pop-imap-2-1171882)
 
 <hr/>
 
