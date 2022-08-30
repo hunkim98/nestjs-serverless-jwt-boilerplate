@@ -1,8 +1,10 @@
 # Nestjs serverless jwt boilerplate
 
-This is a boilerplate for creating a nestjs backend server with serverless. It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
+This is a backend server boilerplate of the `fullstack series` [nextjs-admin-jwt-boilerplate](https://github.com/hunkim98/nextjs-admin-jwt-boilerplate), [nextjs-client-jwt-boilerplate](https://github.com/hunkim98/nextjs-client-jwt-boilerplate) 
 
-Since this project uses serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. 
+It uses jwt token to authenticate users. The refresh token will be stored in the clients' browser.
+
+This project can be used with serverless (`Using serverless is not mandatory!`). However, when deployed with serverless, some functions that worked with no problem in the local environment might have problems in the severless environment. So keep in mind to check whether your functions work even in the serverless environment when you deploy.
 
 For instance, serverless does not support `relative` imports. All imports from another file should be done in a `absolute` way. So you cannot use `src/file.ts` to import a function. You should instead find its path relative to the current file and write something like `../../file.ts`
 
@@ -21,7 +23,13 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 # Installation
 
-`yarn` or `npm install`
+```
+$ yarn
+```
+or
+```
+$ npm install
+```
 
 <hr/>
 
@@ -37,7 +45,7 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 ### 3. Google SMTP mail service
 
-- This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google.
+- This boilerplate project assumes that you are using gmail to send users email. If you want to send email through gmail, it is recommeded that you get a gmail service auth password through google. [How to setup gmail service auth password](https://www.lifewire.com/get-a-password-to-access-gmail-by-pop-imap-2-1171882)
 
 <hr/>
 
@@ -67,7 +75,7 @@ For instance, serverless does not support `relative` imports. All imports from a
 
 <hr/>
 
-# Serverless deployment
+# Serverless deployment (`Optional!`)
 
 ### 1. Go to AWS and configure your VPC and create a MYSQL RDS
 
